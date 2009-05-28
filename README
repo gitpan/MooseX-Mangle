@@ -1,0 +1,12 @@
+
+
+This archive contains the distribution MooseX-Mangle, version
+0.01:
+
+  mangle the argument list or return values of your methods
+
+This software is copyright (c) 2009 by Jesse Luehrs.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as perl itself.
+
