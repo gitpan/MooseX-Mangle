@@ -1,3 +1,4 @@
+Changes
 LICENSE
 MANIFEST
 META.yml
@@ -10,3 +11,5 @@ t/001-synopsis.t
 t/010-mangle-args.t
 t/011-mangle-return.t
 t/012-guard.t
+t/release-pod-coverage.t
+t/release-pod-syntax.t

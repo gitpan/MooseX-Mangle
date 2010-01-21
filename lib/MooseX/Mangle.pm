@@ -1,6 +1,5 @@
 package MooseX::Mangle;
-our $VERSION = '0.01';
-
+our $VERSION = '0.02';
 use Moose ();
 use Moose::Exporter;
 
@@ -10,7 +9,7 @@ MooseX::Mangle - mangle the argument list or return values of your methods
 
 =head1 VERSION
 
-version 0.01
+version 0.02
 
 =head1 SYNOPSIS
 
@@ -63,9 +62,8 @@ actually pass to the method.
 =cut
 
 sub mangle_args {
-    my $caller = shift;
+    my $meta = shift;
     my ($method_name, $code) = @_;
-    my $meta = Class::MOP::class_of($caller);
     $meta->add_around_method_modifier($method_name => sub {
         my $orig = shift;
         my $self = shift;
@@ -84,9 +82,8 @@ return.
 =cut
 
 sub mangle_return {
-    my $caller = shift;
+    my $meta = shift;
     my ($method_name, $code) = @_;
-    my $meta = Class::MOP::class_of($caller);
     $meta->add_around_method_modifier($method_name => sub {
         my $orig = shift;
         my $self = shift;
@@ -94,9 +91,14 @@ sub mangle_return {
             my @ret = $self->$orig(@_);
             return $self->$code(@ret);
         }
-        else {
+        elsif (defined(wantarray)) {
             my $ret = $self->$orig(@_);
             return $self->$code($ret);
+        }
+        else {
+            $self->$orig(@_);
+            $self->$code();
+            return;
         }
     });
 }
@@ -111,9 +113,8 @@ undef is returned without the original method being called at all.
 =cut
 
 sub guard {
-    my $caller = shift;
+    my $meta = shift;
     my ($method_name, $code) = @_;
-    my $meta = Class::MOP::class_of($caller);
     $meta->add_around_method_modifier($method_name => sub {
         my $orig = shift;
         my $self = shift;
@@ -125,12 +126,14 @@ sub guard {
 }
 
 Moose::Exporter->setup_import_methods(
-    with_caller => [qw(mangle_args mangle_return guard)],
+    with_meta => [qw(mangle_args mangle_return guard)],
 );
 
 =head1 BUGS
 
 No known bugs.
+
+Suggestions for more modifiers are always welcome, though.
 
 Please report any bugs through RT: email
 C<bug-moosex-mangle at rt.cpan.org>, or browse to
